@@ -1,0 +1,41 @@
+services:
+  web:
+    env_file:
+      - path: ./nginx/.env
+        required: true
+    image: nginx:1
+    build: ./nginx
+    container_name: web
+    environment:
+      - PLUTCHART_DOMAIN=plutchart.local
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
+      - nginx-logs:/var/log/nginx/services/:rw
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+  
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    volumes:
+      - mongo-volume:/data/db/:rw
+
+volumes:
+  mongo-volume:
+    name: mongo-volume
+  nginx-logs:
+    name: nginx-logs
+
+networks:
+  default:
+    name: base-network

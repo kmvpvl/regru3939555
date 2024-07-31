@@ -1,0 +1,97 @@
+worker_processes auto;
+
+load_module modules/ngx_http_js_module.so;
+
+events {
+
+}
+http {
+    js_path "/etc/nginx/njs/";
+    js_import health from health.js;
+    log_format compression '[$time_local] $host - $remote_addr "$request" $status "$http_user_agent"';
+
+    access_log /var/log/nginx/services/access.log compression;
+    error_log /var/log/nginx/services/error.log warn;    
+
+    server {
+        listen 80;
+        server_name api.${PLUTCHART_DOMAIN} www.${PLUTCHART_DOMAIN} ${PLUTCHART_DOMAIN} tool.${PLUTCHART_DOMAIN};
+        server_tokens off;
+
+        location /.well-known/acme-challenge/ {
+            allow all;
+            root /var/www/certbot;
+        }
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }    
+
+    server {
+        server_name www.${PLUTCHART_DOMAIN} ${PLUTCHART_DOMAIN};
+        include plutchart_ssl.conf;
+
+        location = /health {
+            default_type application/json;
+            js_content health.health;
+        }
+
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_pass http://plutchart-landing:3001;
+        }
+    }
+
+    server {
+        server_name api.${PLUTCHART_DOMAIN};
+        include plutchart_ssl.conf;
+        
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_pass http://plutchart-api:8000;
+        }
+    }
+
+    server {
+        server_name tool.${PLUTCHART_DOMAIN};
+        include plutchart_ssl.conf;
+
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_pass http://plutchart-tool:3002;
+        }
+    }
+
+    server {
+        server_name api.${SHOME_DOMAIN};
+        include shome_ssl.conf;
+
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_pass http://shome-api:8000;
+        }
+    }
+
+    server {
+        listen 80 default_server;
+        listen 443 default_server ssl;
+        http2 on;
+        ssl_certificate /etc/nginx/ssl/live/plutchart.com/fullchain.pem;
+        ssl_certificate_key /etc/nginx/ssl/live/plutchart.com/privkey.pem;
+        server_name _;
+        return 444;
+    }
+}
