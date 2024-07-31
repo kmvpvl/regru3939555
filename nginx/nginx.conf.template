@@ -15,7 +15,13 @@ http {
 
     server {
         listen 80;
-        server_name api.${PLUTCHART_DOMAIN} www.${PLUTCHART_DOMAIN} ${PLUTCHART_DOMAIN} tool.${PLUTCHART_DOMAIN};
+        server_name api.${PLUTCHART_DOMAIN} 
+                    www.${PLUTCHART_DOMAIN} 
+                    ${PLUTCHART_DOMAIN} 
+                    tool.${PLUTCHART_DOMAIN} 
+                    api.${SHOME_DOMAIN} 
+                    ${SHOME_DOMAIN} 
+                    www.${SHOME_DOMAIN};
         server_tokens off;
 
         location /.well-known/acme-challenge/ {
