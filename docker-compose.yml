@@ -6,8 +6,6 @@ services:
     image: nginx:1
     build: ./nginx
     container_name: web
-    environment:
-      - PLUTCHART_DOMAIN=plutchart.local
     ports:
       - "80:80"
       - "443:443"

@@ -10,7 +10,7 @@ RUN mkdir -p /var/log/nginx/services/plutchart/tool
 #conf
 COPY *.conf.template /etc/nginx/
 COPY *.sh /etc/nginx/
-
+RUN chmod +x /etc/nginx/*.sh
 #for health page
 RUN mkdir -p /etc/nginx/njs
 COPY health.js /etc/nginx/njs/health.js
