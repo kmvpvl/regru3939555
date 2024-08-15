@@ -19,6 +19,7 @@ http {
                     www.${PLUTCHART_DOMAIN} 
                     ${PLUTCHART_DOMAIN} 
                     tool.${PLUTCHART_DOMAIN} 
+                    wiki.${PLUTCHART_DOMAIN} 
                     api.${SHOME_DOMAIN} 
                     ${SHOME_DOMAIN} 
                     www.${SHOME_DOMAIN};
@@ -62,6 +63,19 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_pass http://plutchart-api:8000;
+        }
+    }
+
+    server {
+        server_name wiki.${PLUTCHART_DOMAIN};
+        include plutchart_ssl.conf;
+        
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_pass http://plutchart-wiki:3000;
         }
     }
 
