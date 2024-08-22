@@ -10,6 +10,14 @@ services:
       - "80:80"
       - "443:443"
     restart: always
+    depends_on:
+      - backuper
+      - mongo
+      #- plutchart-api
+      #- plutchart-landing
+      #- plutchart-tool
+      #- shome-api
+      #- shome-cli
     volumes:
       - ./certbot/www/:/var/www/certbot/:ro
       - ./certbot/conf/:/etc/nginx/ssl/:ro
@@ -22,13 +30,33 @@ services:
       - ./certbot/conf/:/etc/letsencrypt/:rw
   
   mongo:
-    image: mongo:latest
+    image: mongo:1
+    build: ./mongo
     container_name: mongo
     restart: always
     volumes:
       - mongo-volume:/data/db/:rw
-
+      - backup-volume:/bckp/:rw
+  backuper:
+    image: lscr.io/linuxserver/syncthing:latest
+    container_name: backuper
+    hostname: backuper #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./backuper/conf:/config
+      - backup-volume:/bckp/:rw
+    #ports:
+    #  - 8384:null
+    #  - 22000:22000/tcp
+    #  - 22000:22000/udp
+    #  - 21027:21027/udp
+    restart: unless-stopped
 volumes:
+  backup-volume:
+    name: backup-volume
   mongo-volume:
     name: mongo-volume
   nginx-logs:

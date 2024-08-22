@@ -1,0 +1,1 @@
+(mongodump -d SHOME -o /bckp/db/) >> /var/log/bckp/shome.log

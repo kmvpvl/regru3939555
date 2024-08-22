@@ -106,6 +106,32 @@ http {
     }
 
     server {
+        server_name bckp.${SHOME_DOMAIN};
+        include shome_ssl.conf;
+
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_pass http://backuper:8384;
+        }
+    }
+
+    server {
+        server_name www.${SHOME_DOMAIN} ${SHOME_DOMAIN};
+        include shome_ssl.conf;
+
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_pass http://shome-cli:3000;
+        }
+    }
+
+    server {
         listen 80 default_server;
         listen 443 default_server ssl;
         http2 on;

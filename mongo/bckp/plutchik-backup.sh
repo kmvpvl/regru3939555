@@ -1,0 +1,1 @@
+(mongodump -d PLUTCHIK -o /bckp/db/) >> /var/log/bckp/plutchik.log
