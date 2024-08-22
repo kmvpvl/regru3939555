@@ -108,7 +108,7 @@ http {
 
     server {
         server_name bckp.${SHOME_DOMAIN};
-        include shome_ssl.conf;
+        include bckp_ssl.conf;
 
         location / {
             proxy_set_header Host $host;
