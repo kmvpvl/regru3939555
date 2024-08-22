@@ -22,7 +22,8 @@ http {
                     wiki.${PLUTCHART_DOMAIN} 
                     api.${SHOME_DOMAIN} 
                     ${SHOME_DOMAIN} 
-                    www.${SHOME_DOMAIN};
+                    www.${SHOME_DOMAIN}
+                    bckp.${SHOME_DOMAIN};
         server_tokens off;
 
         location /.well-known/acme-challenge/ {
