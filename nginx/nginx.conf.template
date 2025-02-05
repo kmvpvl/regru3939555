@@ -23,7 +23,8 @@ http {
                     api.${SHOME_DOMAIN} 
                     ${SHOME_DOMAIN} 
                     www.${SHOME_DOMAIN}
-                    bckp.${SHOME_DOMAIN};
+                    bckp.${PLUTCHART_DOMAIN}
+                    sh.${PLUTCHART_DOMAIN};
         server_tokens off;
 
         location /.well-known/acme-challenge/ {
@@ -107,7 +108,7 @@ http {
     }
 
     server {
-        server_name bckp.${SHOME_DOMAIN};
+        server_name bckp.${PLUTCHART_DOMAIN};
         include bckp_ssl.conf;
 
         location / {
@@ -119,18 +120,18 @@ http {
         }
     }
 
-    server {
-        server_name www.${SHOME_DOMAIN} ${SHOME_DOMAIN};
-        include shome_ssl.conf;
-
-        location / {
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_pass http://shome-cli:3000;
-        }
-    }
+#    server {
+#        server_name www.${SHOME_DOMAIN} ${SHOME_DOMAIN};
+#        include shome_ssl.conf;
+#
+#        location / {
+#            proxy_set_header Host $host;
+#            proxy_set_header X-Real-IP $remote_addr;
+#            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#            proxy_set_header X-Forwarded-Proto $scheme;
+#            proxy_pass http://shome-cli:3000;
+#        }
+#    }
 
     server {
         listen 80 default_server;
